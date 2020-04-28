@@ -1,0 +1,13 @@
+#surpevised learning
+#loss function: 
+
+
+
+
+
+from sklearn import datasets
+boston = datasets.load_boston() # loading price
+X = boston.data
+y = boston.target
+print X.shape
+print y.shape
