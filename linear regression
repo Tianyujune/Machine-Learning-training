@@ -1,5 +1,10 @@
 #surpevised learning
-#loss function: 
+#cost function: J(θ),quality of charasristic vectorθ
+#learning rate
+#BGD,SGD,MBGD
+#overfitting:J(θ)~~0, passing across every sample,weak prediction
+#regualrization
+#least squares
 
 
 
@@ -11,3 +16,56 @@ X = boston.data
 y = boston.target
 print X.shape
 print y.shape
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y ,test_size = 1/3.,random_state = 8)
+
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_val_score
+
+# linear regression
+lr = LinearRegression(normalize=True,n_jobs=2) 
+scores = cross_val_score(lr,X_train,y_train,cv=10,scoring='neg_mean_squared_error') #计算均方误差
+print scores.mean()
+
+lr.fit(X_train,y_train)
+lr.score(X_test,y_test)
+
+# regualrization for k=3 overfitting
+
+lr_featurizer = PolynomialFeatures(degree=3) # 用于产生多项式 degree:最高次项的次数
+X_pf_train = lr_featurizer.fit_transform(X_train)
+X_pf_test = lr_featurizer.transform(X_test)
+
+# LASSO regression
+from sklearn.linear_model import Lasso
+
+for a in range(0,0.0005）:
+    print '----%f-----'% a
+    lasso = Lasso(alpha=a,normalize=True)
+    pf_scores = cross_val_score(lasso,X_pf_train,y_train,cv=10,scoring='neg_mean_squared_error')
+    print pf_scores.mean()
+
+    lasso.fit(X_pf_train,y_train)
+    print lasso.score(X_pf_test,y_test)
+    print lasso.score(X_pf_train,y_train)
+    
+    # regualrization for k=3 overfitting 
+
+lr_featurizer = PolynomialFeatures(degree=3) # 用于产生多项式 degree:最高次项的次数
+X_pf_train = lr_featurizer.fit_transform(X_train)
+X_pf_test = lr_featurizer.transform(X_test)
+
+from sklearn.linear_model import Ridge
+
+# Ridge Regression
+for a in [0,0.005]:
+    print '----%f-----'% a
+    ridge = Ridge(alpha=a,normalize=True)
+    pf_scores = cross_val_score(ridge,X_pf_train,y_train,cv=10,scoring='neg_mean_squared_error')
+    print pf_scores.mean()
+
+    ridge.fit(X_pf_train,y_train)
+    print ridge.score(X_pf_test,y_test)
+    print ridge.score(X_pf_train,y_train)
+
